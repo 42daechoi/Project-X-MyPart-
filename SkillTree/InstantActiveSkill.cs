@@ -2,11 +2,10 @@ using UnityEngine;
 
 public abstract class InstantActiveSkill : ActiveSkill
 {
+    protected InstantActiveSkill(ActiveSkillData data) : base(data) { }
+
     public override void Activate()
     {
-        float cooldown = GetCooldown();
-        if (Time.time < lastUseTime + cooldown) return;
-        lastUseTime = Time.time;
         OnCast();
     }
 

@@ -20,12 +20,12 @@ public class TargetingProjectile : MonoBehaviour
 		transform.position += (Vector3)direction * speed * Time.deltaTime;
 	}
 
-	public void Init(Vector2 dir, ActiveSkillData data, float trackingRange, int hits)
+	public void Init(Vector2 dir, ActiveSkillData data, float trackingRange, int hits, float damage)
 	{
 		direction = dir.normalized;
 		range = trackingRange;
 		maxHits = hits;
-		damage = DamageCalculator.GetFinalAttackDamage(PlayerController.Instance.stats, data.damageMultiplier);
+		this.damage = DamageCalculator.GetFinalAttackDamage(PlayerController.Instance.stats, damage);
 
         DOVirtual.DelayedCall(10f, () =>
         {

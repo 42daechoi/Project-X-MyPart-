@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,34 +5,26 @@ public class Inventory : MonoBehaviour
 {
     public static Inventory Instance { get; private set; }
 
-    [SerializeField] private int gridWidth = 8;
-    [SerializeField] private int gridHeight = 8;
+    [SerializeField] protected int gridWidth = 16;
+    [SerializeField] protected int gridHeight = 16;
+    public EInventoryType inventoryType;
 
-    private Item[,] grid;
-    private List<Item> itemList = new List<Item>();
+    protected Item[,] grid;
+    protected List<Item> itemList = new List<Item>();
 
     public List<Item> GetItemList() => itemList;
     public int GetGridWidth() => gridWidth;
     public int GetGridHeight() => gridHeight;
 
-    private void Awake()
+    public void Init()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
         grid = new Item[gridWidth, gridHeight];
     }
 
     /// <summary>
     /// 아이템을 지정된 위치에 배치할 수 있는지 확인
     /// </summary>
-    private bool CanPlaceItem(Vector2Int position, Item item)
+    protected virtual bool CanPlaceItem(Vector2Int position, Item item)
     {
         foreach (var cell in item.Shape)
         {
@@ -53,7 +44,7 @@ public class Inventory : MonoBehaviour
     /// <summary>
     /// 아이템을 지정된 위치에 배치
     /// </summary>
-    public bool PlaceItem(Vector2Int position, Item item)
+    public virtual bool PlaceItem(Vector2Int position, Item item)
     {
         if (!CanPlaceItem(position, item))
             return false;
@@ -123,10 +114,10 @@ public class Inventory : MonoBehaviour
     /// <summary>
     /// 재배치 혹은 판매를 위해 지정된 위치의 아이템을 제거
     /// </summary>
-    public void RemoveItemAt(Vector2Int position, bool isReplace = false)
+    public virtual bool RemoveItemAt(Vector2Int position, bool isReplace = false)
     {
         Item item = GetItemAt(position);
-        if (item == null) return;
+        if (item == null) return false;
 
         foreach (var cell in item.Shape)
         {
@@ -139,6 +130,7 @@ public class Inventory : MonoBehaviour
         itemList.Remove(item);
         if (!isReplace) EventBus.OnChangeInventory?.Invoke();
         Debug.Log($"Inventory: 재배치를 위해 ({position.x}, {position.y}) 위치의 아이템 {item.data.itemName} 제거됨.");
+        return true;
     }
 
     /// <summary>

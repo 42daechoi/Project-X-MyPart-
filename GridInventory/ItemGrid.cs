@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ItemGrid : MonoBehaviour
 {
-    public const float tileSizeWidth = 100;
-    public const float tileSizeHeight = 100;
+    public const float tileSizeWidth = 50;
+    public const float tileSizeHeight = 50;
     private int gridWidth;
     private int gridHeight;
 
@@ -14,6 +14,8 @@ public class ItemGrid : MonoBehaviour
     private RectTransform rectTransform;
     private Canvas rootCanvas;
     [SerializeField] private GameObject ItemUIPrefab;
+    public Inventory inventory;
+    public EInventoryType inventoryType;
 
     private Queue<GameObject> itemObjectPool = new Queue<GameObject>();
     private List<GameObject> activeItemObjectList = new List<GameObject>();
@@ -22,29 +24,41 @@ public class ItemGrid : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
         rootCanvas = GetComponentInParent<Canvas>();
-        Init();
+        InitGrid();
+    }
+
+    public void Init()
+    {
+        if (inventoryType == EInventoryType.SkillTree)
+        {
+            inventory = InventoryManager.Instance.skillTreeInventory;
+        }
+        else
+        {
+            inventory = InventoryManager.Instance.inventory;
+        }
     }
 
     private void OnEnable()
     {
         EventBus.OnChangeInventory += UpdateGrid;
-        EventBus.OnExpandInventory += Init;
-        Init();
+        EventBus.OnExpandInventory += InitGrid;
+        InitGrid();
     }
 
     private void OnDisable()
     {
         EventBus.OnChangeInventory -= UpdateGrid;
-        EventBus.OnExpandInventory -= Init;
+        EventBus.OnExpandInventory -= InitGrid;
     }
 
     /// <summary>
     /// 그리드 사이즈를 Inventory 데이터 기반으로 초기화
     /// </summary>
-    private void Init()
+    private void InitGrid()
     {
-        gridWidth = Inventory.Instance.GetGridWidth();
-        gridHeight = Inventory.Instance.GetGridHeight();
+        gridWidth = inventory.GetGridWidth();
+        gridHeight = inventory.GetGridHeight();
         Vector2 size = new Vector2(gridWidth * tileSizeWidth, gridHeight * tileSizeWidth);
         rectTransform.sizeDelta = size;
     }
@@ -76,7 +90,7 @@ public class ItemGrid : MonoBehaviour
         activeItemObjectList.Clear();
 
         int count = 0;
-        foreach (Item item in Inventory.Instance.GetItemList())
+        foreach (Item item in inventory.GetItemList())
         {
             count++;
             GameObject itemObj = GetObjectFromPool();
@@ -103,7 +117,6 @@ public class ItemGrid : MonoBehaviour
         }
         else
         {
-            Debug.Log(rectTransform);
             return Instantiate(ItemUIPrefab, rectTransform);
         }
     }

@@ -14,19 +14,19 @@ public class ProjectileMover : MonoBehaviour
     private bool isReady = false;
 
 
-    public void Init(Vector2 dir, ActiveSkillData data, float chargeDuration)
+    public void Init(Vector2 dir, ActiveSkillData data, float chargeDuration, float damage)
     {
         direction = dir.normalized;
         startPosition = transform.position;
         speed = data.projectileSpeed;
         SetFlexData(data, chargeDuration);
-
+        this.damage = damage;
         isReady = true;
     }
 
     private void SetFlexData(ActiveSkillData data, float chargeDuration)
     {
-        float finalDamage = DamageCalculator.GetFinalAttackDamage(PlayerController.Instance.stats, data.damageMultiplier);
+        float finalDamage = DamageCalculator.GetFinalAttackDamage(PlayerController.Instance.stats, damage);
         if (data.maxChargeDuration > 0)
         {
             if (chargeDuration < data.maxChargeDuration / 4)
@@ -76,10 +76,10 @@ public class ProjectileMover : MonoBehaviour
                 //Damage(target);
             }
         }
-        //else if (target.CompareTag("Wall"))
-        //{
-        //    Destroy(gameObject);
-        //}
+        else if (target.CompareTag("Ground"))
+        {
+            Destroy(gameObject);
+        }
     }
 
 

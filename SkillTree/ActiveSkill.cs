@@ -2,42 +2,62 @@ using UnityEngine;
 
 public abstract class ActiveSkill : Skill
 {
+    protected Transform playerTransform;
     [HideInInspector] public ActiveSkillData activeData;
-    protected float upgradeLevel = 1;
-    protected float lastUseTime = -Mathf.Infinity;
+    protected int upgradeLevel = 0;
 
-    private void Awake()
+    protected ActiveSkill(ActiveSkillData activeSkillData)
     {
-        if (data is ActiveSkillData casted)
+        activeData = activeSkillData;
+        data = activeSkillData;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
         {
-            activeData = casted;
+            Debug.LogError("ActiveSkill : Player를 찾을 수 없습니다.");
         }
         else
         {
-            Debug.LogError($"ActiveSkill : {name}에 할당된 SkillData가 ActiveSkillData가 아닙니다.");
+            playerTransform = player.transform;
+            if (playerTransform == null)
+            {
+                Debug.LogError("ActiveSkill : playerTransform을 찾을 수 없습니다.");
+            }
         }
     }
 
-    protected Transform GetPlayerTransform()
-    {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        return player != null ? player.transform : null;
-    }
-
-    protected float GetCooldown()
-    {
-        return activeData.cooldown;
-    }
-
-    public float GetLevel() => upgradeLevel;
-
     public void UpgradeSkill()
     {
-        if (upgradeLevel < 3) upgradeLevel++;
+        if (upgradeLevel < 2) upgradeLevel++;
     }
 
     public void DowngradeSkill()
     {
-        if (upgradeLevel > 1) upgradeLevel--;
+        if (upgradeLevel > 0) upgradeLevel--;
+    }
+
+    public float GetDamage()
+    {
+        if (activeData.damage.Length != 3)
+        {
+            Debug.LogError("ActiveSkill : 스킬 데이터에 데미지 리스트에 문제가 있습니다.");
+            return 0f;
+        }
+        return activeData.damage[upgradeLevel];
+    }
+
+    public int GetUpgradeLevel()
+    {
+        return upgradeLevel;
+    }
+
+    protected Vector2 GetPlayerForward()
+    {
+        Vector2 forward = playerTransform.localScale.x > 0 ? Vector2.right : Vector2.left;
+        bool isGravityInverted = playerTransform.up.y < 0;
+        if (isGravityInverted)
+        {
+            forward *= -1;
+        }
+        return forward;
     }
 }

@@ -8,6 +8,6 @@ public class FarmableItem : MonoBehaviour
     public void Pickup()
     {
         Item item = new Item(itemData, stackCount);
-        bool success = Inventory.Instance.TryAddItem(item);
+        bool success = InventoryManager.Instance.inventory.TryAddItem(item);
     }
 }

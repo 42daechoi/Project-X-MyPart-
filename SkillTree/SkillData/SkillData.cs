@@ -7,8 +7,5 @@ public class SkillData : ScriptableObject
     public int id;
     public string skillName;
     [TextArea] public string description;
-    public WeaponType type;
-
-    public List<int> prerequisitesAnd;
-    public List<int> prerequisitesOr;
+    public ElementType type;
 }

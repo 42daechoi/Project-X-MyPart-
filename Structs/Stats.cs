@@ -1,18 +1,28 @@
 public enum StatType
 {
-    AttackPower,
-    Defense,
-    MovementSpeed,
-    Health,
-    Mana,
-    Stamina,
-    AttackSpeed,
-    AdditionalAttackPowerRate,
+    MeleePower,
+    MaxHealth,
+    CurHealth,
+    MoveSpeed,
+    CurFireGauge,
+    MaxFireGauge,
+    FireRecovery,
+    AdditionalFirePower,
+    CurElectricGauge,
+    MaxElectricGauge,
+    ElectricRecovery,
+    AdditionalElectricPower,
+    CurEarthGauge,
+    MaxEarthGauge,
+    EarthRecovery,
+    AdditionalEarthPower,
+    CurHpGauge,
+    MaxHpGauge,
+    hpRecovery,
+    AdditionalMeleePowerRate,
     AdditionalDefensePowerRate,
-    AdditionalCooldownRedution,
-    AdditionalHealthPotionRate,
-    MiningBonus,
-    MiningSpeed
+    MiningSpeed,
+    PickAxeLevel
 }
 
 [System.Serializable]
@@ -25,144 +35,156 @@ public struct StatBinder
 [System.Serializable]
 public struct Stats
 {
-    public float attackPower;
-    public float defense;
-    public float moveSpeed;
+    public float meleePower;
     public float maxHealth;
     public float curHealth;
-    public float maxMana;
-    public float curMana;
-    public float stamina;
-    public float attackSpeed;
-    public float miningBonus;
-    public float miningSpeed;
+    public float moveSpeed;
 
-    public float additionalAttackPowerRate;
+    public float curFireGauge;
+    public float maxFireGauge;
+    public float fireRecovery;
+    public float additionalFirePower;
+
+    public float curElectricGauge;
+    public float maxElectricGauge;
+    public float electricRecovery;
+    public float additionalElectricPower;
+
+    public float curEarthGauge;
+    public float maxEarthGauge;
+    public float earthRecovery;
+    public float additionalEarthPower;
+
+    public float curHPGauge;
+    public float maxHPGauge;
+    public float hpRecovery;
+
+    public float additionalMeleePowerRate;
     public float additionalDefensePowerRate;
-    public float additionalCooldownRedution;
-    public float additionalHealthPotionRate;
 
-    public static Stats Zero => new Stats
-    {
-        attackPower = 0,
-        defense = 0,
-        moveSpeed = 0,
-        maxHealth = 0,
-        curHealth = 0,
-        maxMana = 0,
-        curMana = 0,
-        stamina = 0,
-        attackSpeed = 0,
-        additionalAttackPowerRate = 0,
-        additionalDefensePowerRate = 0,
-        additionalCooldownRedution = 0,
-        additionalHealthPotionRate = 0,
-        miningBonus = 0,
-        miningSpeed = 0
-    };
+    public float miningSpeed;
+    public int pickAxeLevel;
 
-    /// <summary>
-    /// 장비의 추가 스텟 합산
-    /// </summary>
+    public static Stats Zero => new Stats();
+
     public static Stats operator +(Stats a, Stats b)
     {
         return new Stats
         {
-            attackPower = a.attackPower + b.attackPower,
-            defense = a.defense + b.defense,
-            moveSpeed = a.moveSpeed + a.moveSpeed * b.moveSpeed,
+            meleePower = a.meleePower + b.meleePower,
             maxHealth = a.maxHealth + b.maxHealth,
-            maxMana = a.maxMana + b.maxMana,
-            stamina = a.stamina + b.stamina,
-            attackSpeed = a.attackSpeed + b.attackSpeed,
-            miningBonus = a.miningBonus + b.miningBonus,
-            miningSpeed = a.miningSpeed + b.miningSpeed
+            curHealth = a.curHealth + b.curHealth,
+            moveSpeed = a.moveSpeed + b.moveSpeed,
+            curFireGauge = a.curFireGauge + b.curFireGauge,
+            maxFireGauge = a.maxFireGauge + b.maxFireGauge,
+            fireRecovery = a.fireRecovery + b.fireRecovery,
+            additionalFirePower = a.additionalFirePower + b.additionalFirePower,
+            curElectricGauge = a.curElectricGauge + b.curElectricGauge,
+            maxElectricGauge = a.maxElectricGauge + b.maxElectricGauge,
+            electricRecovery = a.electricRecovery + b.electricRecovery,
+            additionalElectricPower = a.additionalElectricPower + b.additionalElectricPower,
+            curEarthGauge = a.curEarthGauge + b.curEarthGauge,
+            maxEarthGauge = a.maxEarthGauge + b.maxEarthGauge,
+            earthRecovery = a.earthRecovery + b.earthRecovery,
+            additionalEarthPower = a.additionalEarthPower + b.additionalEarthPower,
+            curHPGauge = a.curHPGauge + b.curHPGauge,
+            maxHPGauge = a.maxHPGauge + b.maxHPGauge,
+            hpRecovery = a.hpRecovery + b.hpRecovery,
+            additionalMeleePowerRate = a.additionalMeleePowerRate + b.additionalMeleePowerRate,
+            additionalDefensePowerRate = a.additionalDefensePowerRate + b.additionalDefensePowerRate,
+            miningSpeed = a.miningSpeed + b.miningSpeed,
+            pickAxeLevel = a.pickAxeLevel + b.pickAxeLevel,
         };
     }
 
-    /// <summary>
-    /// 장비의 추가 스텟 차감
-    /// </summary>
     public static Stats operator -(Stats a, Stats b)
     {
         return new Stats
         {
-            attackPower = a.attackPower - b.attackPower,
-            defense = a.defense - b.defense,
-            moveSpeed = a.moveSpeed - b.moveSpeed,
+            meleePower = a.meleePower - b.meleePower,
             maxHealth = a.maxHealth - b.maxHealth,
-            maxMana = a.maxMana - b.maxMana,
-            stamina = a.stamina - b.stamina,
-            attackSpeed = a.attackSpeed - b.attackSpeed,
-            miningBonus = a.miningBonus - b.miningBonus,
-            miningSpeed = a.miningSpeed - b.miningSpeed
+            curHealth = a.curHealth - b.curHealth,
+            moveSpeed = a.moveSpeed - b.moveSpeed,
+            curFireGauge = a.curFireGauge - b.curFireGauge,
+            maxFireGauge = a.maxFireGauge - b.maxFireGauge,
+            fireRecovery = a.fireRecovery - b.fireRecovery,
+            additionalFirePower = a.additionalFirePower - b.additionalFirePower,
+            curElectricGauge = a.curElectricGauge - b.curElectricGauge,
+            maxElectricGauge = a.maxElectricGauge - b.maxElectricGauge,
+            electricRecovery = a.electricRecovery - b.electricRecovery,
+            additionalElectricPower = a.additionalElectricPower - b.additionalElectricPower,
+            curEarthGauge = a.curEarthGauge - b.curEarthGauge,
+            maxEarthGauge = a.maxEarthGauge - b.maxEarthGauge,
+            earthRecovery = a.earthRecovery - b.earthRecovery,
+            additionalEarthPower = a.additionalEarthPower - b.additionalEarthPower,
+            curHPGauge = a.curHPGauge - b.curHPGauge,
+            maxHPGauge = a.maxHPGauge - b.maxHPGauge,
+            hpRecovery = a.hpRecovery - b.hpRecovery,
+            additionalMeleePowerRate = a.additionalMeleePowerRate - b.additionalMeleePowerRate,
+            additionalDefensePowerRate = a.additionalDefensePowerRate - b.additionalDefensePowerRate,
+            miningSpeed = a.miningSpeed - b.miningSpeed,
+            pickAxeLevel = a.pickAxeLevel - b.pickAxeLevel,
         };
     }
 
-    /// <summary>
-    /// 소모품 사용 및 스킬트리 추가 스텟 합산
-    /// </summary>
     public static Stats operator +(Stats stats, StatBinder binder)
     {
         switch (binder.type)
         {
-            case StatType.Health:
-                stats.curHealth += stats.maxHealth * (binder.value + stats.additionalHealthPotionRate);
-                break;
-            case StatType.Mana:
-                stats.curMana += stats.maxMana * binder.value;
-                break;
-            case StatType.AdditionalAttackPowerRate:
-                stats.additionalAttackPowerRate += binder.value;
-                break;
-            case StatType.AdditionalDefensePowerRate:
-                stats.additionalDefensePowerRate += binder.value;
-                break;
-            case StatType.AdditionalCooldownRedution:
-                stats.additionalCooldownRedution += binder.value;
-                break;
-            case StatType.AdditionalHealthPotionRate:
-                stats.additionalHealthPotionRate += binder.value;
-                break;
-            case StatType.MiningBonus:
-              stats.miningBonus += binder.value;
-                break;
-            case StatType.MiningSpeed:
-              stats.miningSpeed += binder.value;
-                break;
-            default:
-                break;
+            case StatType.MeleePower: stats.meleePower += binder.value; break;
+            case StatType.MaxHealth: stats.maxHealth += binder.value; break;
+            case StatType.CurHealth: stats.curHealth += binder.value; break;
+            case StatType.MoveSpeed: stats.moveSpeed += binder.value; break;
+            case StatType.CurFireGauge: stats.curFireGauge += binder.value; break;
+            case StatType.MaxFireGauge: stats.maxFireGauge += binder.value; break;
+            case StatType.FireRecovery: stats.fireRecovery += binder.value; break;
+            case StatType.AdditionalFirePower: stats.additionalFirePower += binder.value; break;
+            case StatType.CurElectricGauge: stats.curElectricGauge += binder.value; break;
+            case StatType.MaxElectricGauge: stats.maxElectricGauge += binder.value; break;
+            case StatType.ElectricRecovery: stats.electricRecovery += binder.value; break;
+            case StatType.AdditionalElectricPower: stats.additionalElectricPower += binder.value; break;
+            case StatType.CurEarthGauge: stats.curEarthGauge += binder.value; break;
+            case StatType.MaxEarthGauge: stats.maxEarthGauge += binder.value; break;
+            case StatType.EarthRecovery: stats.earthRecovery += binder.value; break;
+            case StatType.AdditionalEarthPower: stats.additionalEarthPower += binder.value; break;
+            case StatType.CurHpGauge: stats.curHPGauge += binder.value; break;
+            case StatType.MaxHpGauge: stats.maxHPGauge += binder.value; break;
+            case StatType.hpRecovery: stats.hpRecovery += binder.value; break;
+            case StatType.AdditionalMeleePowerRate: stats.additionalMeleePowerRate += binder.value; break;
+            case StatType.AdditionalDefensePowerRate: stats.additionalDefensePowerRate += binder.value; break;
+            case StatType.MiningSpeed: stats.miningSpeed += binder.value; break;
+            case StatType.PickAxeLevel: stats.pickAxeLevel += (int)binder.value; break;
         }
         return stats;
     }
 
-    /// <summary>
-    /// 스킬트리 추가 스텟 차감
-    /// </summary>
     public static Stats operator -(Stats stats, StatBinder binder)
     {
         switch (binder.type)
         {
-            case StatType.AdditionalAttackPowerRate:
-                stats.additionalAttackPowerRate -= binder.value;
-                break;
-            case StatType.AdditionalDefensePowerRate:
-                stats.additionalDefensePowerRate -= binder.value;
-                break;
-            case StatType.AdditionalCooldownRedution:
-                stats.additionalCooldownRedution -= binder.value;
-                break;
-            case StatType.AdditionalHealthPotionRate:
-                stats.additionalHealthPotionRate -= binder.value;
-                break;
-            case StatType.MiningBonus:
-                stats.miningBonus -= binder.value;
-                break;
-            case StatType.MiningSpeed:
-                stats.miningSpeed -= binder.value;
-                break;
-            default:
-                break;
+            case StatType.MeleePower: stats.meleePower -= binder.value; break;
+            case StatType.MaxHealth: stats.maxHealth -= binder.value; break;
+            case StatType.CurHealth: stats.curHealth -= binder.value; break;
+            case StatType.MoveSpeed: stats.moveSpeed -= binder.value; break;
+            case StatType.CurFireGauge: stats.curFireGauge -= binder.value; break;
+            case StatType.MaxFireGauge: stats.maxFireGauge -= binder.value; break;
+            case StatType.FireRecovery: stats.fireRecovery -= binder.value; break;
+            case StatType.AdditionalFirePower: stats.additionalFirePower -= binder.value; break;
+            case StatType.CurElectricGauge: stats.curElectricGauge -= binder.value; break;
+            case StatType.MaxElectricGauge: stats.maxElectricGauge -= binder.value; break;
+            case StatType.ElectricRecovery: stats.electricRecovery -= binder.value; break;
+            case StatType.AdditionalElectricPower: stats.additionalElectricPower -= binder.value; break;
+            case StatType.CurEarthGauge: stats.curEarthGauge -= binder.value; break;
+            case StatType.MaxEarthGauge: stats.maxEarthGauge -= binder.value; break;
+            case StatType.EarthRecovery: stats.earthRecovery -= binder.value; break;
+            case StatType.AdditionalEarthPower: stats.additionalEarthPower -= binder.value; break;
+            case StatType.CurHpGauge: stats.curHPGauge -= binder.value; break;
+            case StatType.MaxHpGauge: stats.maxHPGauge -= binder.value; break;
+            case StatType.hpRecovery: stats.hpRecovery -= binder.value; break;
+            case StatType.AdditionalMeleePowerRate: stats.additionalMeleePowerRate -= binder.value; break;
+            case StatType.AdditionalDefensePowerRate: stats.additionalDefensePowerRate -= binder.value; break;
+            case StatType.MiningSpeed: stats.miningSpeed -= binder.value; break;
+            case StatType.PickAxeLevel: stats.pickAxeLevel -= (int)binder.value; break;
         }
         return stats;
     }

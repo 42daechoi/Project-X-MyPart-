@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class Skill : MonoBehaviour
+public abstract class Skill
 {
     public SkillData data;
 

@@ -43,10 +43,6 @@ public class InventoryTester : MonoBehaviour
                 itemObject.GetComponent<FarmableItem>().Pickup();
             }
         }
-        else if (Input.GetKeyUp(KeyCode.W))
-        {
-            Inventory.Instance.ExpandInventory();
-        }
         else if (Input.GetKeyDown(KeyCode.X))
         {
             EventBus.OnInteractMerchant?.Invoke("Gear", true);

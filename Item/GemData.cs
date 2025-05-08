@@ -11,7 +11,7 @@ public enum GemSize
 public class GemData : ItemData
 {
     [SerializeField] private GemSize gemSize;
-    [SerializeField] private WeaponType weaponType;
+    [SerializeField] private ElementType elementType;
     public GemSize GemSize => gemSize;
 
     private void OnEnable()

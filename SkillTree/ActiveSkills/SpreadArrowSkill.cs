@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class SpreadArrowSkill : InstantActiveSkill
 {
-    public GameObject projectilePrefab;
     public float angleOffset = 15f;
+
+    public SpreadArrowSkill(ActiveSkillData data) : base(data) { }
 
     protected override void OnCast()
     {
-        Transform playerTransform = GetPlayerTransform();
         Vector2 forward = playerTransform.localScale.x > 0 ? Vector2.right : Vector2.left;
 
         float[] angles = { 0f, angleOffset, -angleOffset };
@@ -17,9 +17,9 @@ public class SpreadArrowSkill : InstantActiveSkill
             Vector2 direction = Rotate(forward, angle * Mathf.Deg2Rad);
             Vector3 spawnPos = playerTransform.position + (Vector3)direction.normalized * 0.5f;
 
-            GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+            GameObject proj = GameObject.Instantiate(activeData.prefab, spawnPos, Quaternion.identity);
             ProjectileMover projectileMover = proj.GetComponent<ProjectileMover>();
-            projectileMover?.Init(direction, activeData, 0);
+            projectileMover?.Init(direction, activeData, 0, GetDamage());
         }
     }
 

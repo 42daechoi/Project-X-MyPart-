@@ -1,14 +1,19 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InventoryController : MonoBehaviour
 {
     [HideInInspector] public ItemGrid selectedItemGrid;
+    [HideInInspector] private ItemGrid prevItemGrid;
     [HideInInspector] private SlotUIHighlighter slotUIHighlighter;
+    [SerializeField] private GraphicRaycaster graphicRaycaster;
+    [SerializeField] private EventSystem eventSystem;
     [SerializeField] private RectTransform pickUpItemTransform;
     [SerializeField] private RectTransform inventoryPanelTransform;
-    [SerializeField] private Item pickUpItem;
+    [SerializeField] private RectTransform dragLayer;
+     private Item pickUpItem;
     [SerializeField] private Item itemToHighlight;
 
     [SerializeField] private bool canSell = false;
@@ -18,7 +23,9 @@ public class InventoryController : MonoBehaviour
 
     private void Start()
     {
+        pickUpItem = null;
         slotUIHighlighter = GetComponent<SlotUIHighlighter>();
+        graphicRaycaster = GetComponentInChildren<GraphicRaycaster>();
         EventBus.OnInteractMerchant += ChangeCanSell;
     }
 
@@ -27,21 +34,15 @@ public class InventoryController : MonoBehaviour
         EventBus.OnInteractMerchant -= ChangeCanSell;
     }
 
-    private void ChangeCanSell(string merchantType, bool isInteract)
-    {
-        canSell = isInteract;
-    }
 
     private void Update()
     {
+        selectedItemGrid = GetGridUnderMouse();
         ItemIconDrag();
-
         if (selectedItemGrid == null)
         {
             slotUIHighlighter.Show(false);
-            return;
         }
-
         if (Input.GetMouseButtonDown(1) && canSell)
         {
             SellItem();
@@ -70,14 +71,39 @@ public class InventoryController : MonoBehaviour
         }
     }
 
+    private void ChangeCanSell(string merchantType, bool isInteract)
+    {
+        canSell = isInteract;
+    }
+
+    private ItemGrid GetGridUnderMouse()
+    {
+        PointerEventData pointerData = new PointerEventData(eventSystem)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        graphicRaycaster.Raycast(pointerData, results);
+
+        foreach (var result in results)
+        {
+            ItemGrid grid = result.gameObject.GetComponentInParent<ItemGrid>();
+            if (grid != null && grid.gameObject.activeSelf)
+                return grid;
+        }
+
+        return null;
+    }
+
     private void SellItem()
     {
         Vector2Int tileGridPosition = GetTileGridPosition();
-        Item item = Inventory.Instance.GetItemAt(tileGridPosition);
+        Item item = selectedItemGrid.inventory.GetItemAt(tileGridPosition);
         if (item != null)
         {
             // 아이템(이름)을 판매하시겠습니까? 예 아니오 버튼 UI
-            Inventory.Instance.RemoveItemAt(tileGridPosition, false);
+            selectedItemGrid.inventory.RemoveItemAt(tileGridPosition, false);
         }
     }
 
@@ -87,7 +113,7 @@ public class InventoryController : MonoBehaviour
     private void StartDrag()
     {
         Vector2Int tileGridPosition = GetTileGridPosition();
-
+        if (tileGridPosition.x == -1 && tileGridPosition.y == -1) return;
         if (pickUpItem == null)
         {
             PickUpItem(tileGridPosition);
@@ -117,17 +143,16 @@ public class InventoryController : MonoBehaviour
     private void EndDrag()
     {
         Vector2Int tileGridPosition = GetTileGridPosition();
-
         if (pickUpItem != null)
         {
-            if (IsPointerOverInventoryPanel())
-            {
+            //if (IsPointerOverInventoryPanel())
+            //{
                 PlaceItem(tileGridPosition);
-            }
-            else
-            {
-                DropItem();
-            }
+            //}
+            //else
+            //{
+            //    DropItem();
+            //}
         }
         isDragging = false;
     }
@@ -137,7 +162,7 @@ public class InventoryController : MonoBehaviour
     /// </summary>
     private void DropItem()
     {
-        Inventory.Instance.DropItem(pickUpItem);
+        selectedItemGrid.inventory.DropItem(pickUpItem);
         pickUpItem = null;
         pickUpItemTransform = null;
         rotationCommands.Clear();
@@ -146,18 +171,20 @@ public class InventoryController : MonoBehaviour
     /// <summary>
     /// 현재 마우스 포인터가 인벤토리 패널 위에 있는지 확인
     /// </summary>
-    private bool IsPointerOverInventoryPanel()
-    {
-        Vector2 localMousePosition = Vector2.zero;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(inventoryPanelTransform, Input.mousePosition, null, out localMousePosition);
-        return inventoryPanelTransform.rect.Contains(localMousePosition);
-    }
+    //private bool IsPointerOverInventoryPanel()
+    //{
+    //    Vector2 localMousePosition = Vector2.zero;
+    //    RectTransformUtility.ScreenPointToLocalPointInRectangle(inventoryPanelTransform, Input.mousePosition, null, out localMousePosition);
+    //    return inventoryPanelTransform.rect.Contains(localMousePosition);
+    //}
 
     /// <summary>
     /// 마우스 위치를 그리드 좌표로 변환
     /// </summary>
     private Vector2Int GetTileGridPosition()
     {
+        if (selectedItemGrid == null) return new Vector2Int(-1, -1);
+
         Vector2 position = Input.mousePosition;
 
         if (pickUpItem != null)
@@ -198,18 +225,22 @@ public class InventoryController : MonoBehaviour
     /// </summary>
     private void PlaceItem(Vector2Int tileGridPosition)
     {
+        pickUpItemTransform.SetParent(prevItemGrid.transform, false);
         Vector2Int prevPosition = new Vector2Int(pickUpItem.posX, pickUpItem.posY);
-
-        if (!Inventory.Instance.PlaceItem(tileGridPosition, pickUpItem))
+        if (selectedItemGrid == null || !selectedItemGrid.inventory.PlaceItem(tileGridPosition, pickUpItem))
         {
             UndoAllRotationCommands();
-
-            if (!Inventory.Instance.PlaceItem(prevPosition, pickUpItem))
+            if (!prevItemGrid.inventory.PlaceItem(prevPosition, pickUpItem))
             {
-                Inventory.Instance.TryAddItem(pickUpItem);
+                if (prevItemGrid.inventoryType == EInventoryType.Item)
+                {
+                    prevItemGrid.inventory.TryAddItem(pickUpItem);
+                }
             }
         }
 
+        EnableRaycastForPickUpIcon();
+        prevItemGrid = null;
         pickUpItem = null;
         pickUpItemTransform = null;
         rotationCommands.Clear();
@@ -220,11 +251,30 @@ public class InventoryController : MonoBehaviour
     /// </summary>
     private void PickUpItem(Vector2Int tileGridPosition)
     {
-        pickUpItem = Inventory.Instance.GetItemAt(tileGridPosition);
+        if (selectedItemGrid.inventory is SkillTreeInventory skillTreeInventory)
+        {
+            if (tileGridPosition == skillTreeInventory.startPosition)
+            {
+                return;
+            }
+        }
+        pickUpItem = selectedItemGrid.inventory.GetItemAt(tileGridPosition);
         if (pickUpItem != null)
         {
-            pickUpItemTransform = pickUpItem.GetSlotUI().GetComponent<RectTransform>();
-            Inventory.Instance.RemoveItemAt(tileGridPosition, true);
+            if (selectedItemGrid.inventory.RemoveItemAt(tileGridPosition, true))
+            {
+                pickUpItemTransform = pickUpItem.GetSlotUI().GetComponent<RectTransform>();
+                Vector3 worldPos = pickUpItemTransform.position;
+                pickUpItemTransform.SetParent(dragLayer, false);
+                pickUpItemTransform.position = worldPos;
+                DisableRaycastForPickUpIcon();
+
+                prevItemGrid = selectedItemGrid;
+            }
+            else
+            {
+                pickUpItem = null;
+            }
         }
     }
 
@@ -234,9 +284,10 @@ public class InventoryController : MonoBehaviour
     private void HandleHighlight()
     {
         Vector2Int positionOnGrid = GetTileGridPosition();
+        if (positionOnGrid.x == -1 && positionOnGrid.y == -1) return;
         if (pickUpItem == null)
         {
-            itemToHighlight = Inventory.Instance.GetItemAt(positionOnGrid);
+            itemToHighlight = selectedItemGrid.inventory.GetItemAt(positionOnGrid);
             if (itemToHighlight != null)
             {
                 slotUIHighlighter.Show(true);
@@ -262,6 +313,25 @@ public class InventoryController : MonoBehaviour
         if (pickUpItemTransform != null)
         {
             pickUpItemTransform.position = Input.mousePosition;
+        }
+    }
+
+    private void DisableRaycastForPickUpIcon()
+    {
+        if (pickUpItemTransform != null)
+        {
+            var image = pickUpItemTransform.GetComponent<Image>();
+            if (image != null) image.raycastTarget = false;
+        }
+    }
+
+
+    private void EnableRaycastForPickUpIcon()
+    {
+        if (pickUpItemTransform != null)
+        {
+            var image = pickUpItemTransform.GetComponent<Image>();
+            if (image != null) image.raycastTarget = true;
         }
     }
 }
