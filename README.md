@@ -1,3 +1,4 @@
+```
 Project-X-MyPart-/
 ├── Editor/                     # Unity 에디터 확장
 │   ├── ActiveSkillDataImporter.cs
@@ -37,7 +38,6 @@ Project-X-MyPart-/
 └── Structs/                    # 구조체 정의
     └── Stats.cs               # 스탯 구조체
 ```
-
 ## 🔑 핵심 설계 패턴
 ### 1. 싱글톤 패턴 (Singleton)
 - `InventoryManager`, `SkillManager`에서 전역 접근 제공
