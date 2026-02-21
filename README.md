@@ -104,9 +104,14 @@ Project-X-MyPart-/
 
 자세한 다이어그램은 아래 문서를 참조하세요:
 
-- [📐 클래스 다이어그램](./docs/CLASS_DIAGRAM.md)
-- [🔄 시퀀스 다이어그램](./docs/SEQUENCE_DIAGRAM.md)
-- [📁 구조 다이어그램](./docs/STRUCTURE_DIAGRAM.md)
+### 📂 시스템별 다이어그램 (Mermaid)
+- [⚡ 스킬 시스템 다이어그램](./docs/SKILL_DIAGRAMS.md) - 스킬 클래스, 스킬 데이터, 스킬 사용/해금 시퀀스
+- [📦 인벤토리 & 아이템 시스템 다이어그램](./docs/INVENTORY_ITEM_DIAGRAMS.md) - 인벤토리, 아이템 클래스, 드래그&드롭 시퀀스
+
+### 📂 전체 다이어그램
+- [📐 클래스 다이어그램](./docs/CLASS_DIAGRAM.md) - 전체 클래스 구조
+- [🔄 시퀀스 다이어그램](./docs/SEQUENCE_DIAGRAM.md) - 전체 시퀀스 흐름
+- [📁 구조 다이어그램](./docs/STRUCTURE_DIAGRAM.md) - 폴더/모듈 구조
 
 ## 👨‍💻 담당 역할
 
